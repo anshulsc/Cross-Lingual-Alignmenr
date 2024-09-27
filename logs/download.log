@@ -1,0 +1,7 @@
+2024-09-26 13:41:24,706 - INFO - Starting download for en Wikipedia.
+2024-09-26 13:46:03,898 - INFO - Starting download for hi Wikipedia.
+2024-09-26 13:46:03,898 - INFO - Starting download for en Wikipedia.
+2024-09-26 13:46:56,226 - INFO - Downloaded hi Wikipedia dump to data/raw/hiwiki-latest-pages-articles.xml.bz2.
+2024-09-26 13:46:56,227 - INFO - Completed download for hi Wikipedia.
+2024-09-26 15:10:35,557 - INFO - Downloaded en Wikipedia dump to data/raw/enwiki-latest-pages-articles.xml.bz2.
+2024-09-26 15:10:35,558 - INFO - Completed download for en Wikipedia.

@@ -1,0 +1,31 @@
+# configs/config.yaml
+
+embeddings:
+  fasttext:
+    dim: 300
+    epoch: 10
+    lr: 0.05
+    wordNgrams: 2
+    loss: "ns"  # Negative Sampling
+    bucket: 2000000
+    minn: 3
+    maxn: 6
+    thread: 4
+    model_en_path: "embeddings/fasttext_en.bin"
+    model_hi_path: "embeddings/fasttext_hi.bin"
+  vocabulary_limit: 100000
+  filtered_embeddings_dir: "embeddings"
+
+wikipedia_dumps:
+  en:
+    url: "https://dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2"
+    destination: "data/raw"
+  hi:
+    url: "https://dumps.wikimedia.org/hiwiki/latest/hiwiki-latest-pages-articles.xml.bz2"
+    destination: "data/raw"
+
+data_preparation:
+    processed_data_dir: "data/processed"
+    dictionaries_dir: "data/dictionaries"
+    extracted_data_dir: "data/extracted"
+    num_articles: 10000

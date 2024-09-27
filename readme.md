@@ -1,7 +1,3 @@
-Here's an updated version of the documentation with a section on downloading the MUSE dataset for cross-lingual alignment and storing it in the `lexicon/` folder.
-
----
-
 ## **Overview**
 
 This documentation provides a detailed guide to building a text embedding model from scratch using Wikipedia data. You'll first see the results from a trained FastText model, followed by step-by-step instructions on setting up the pipeline. The guide covers key processes such as downloading Wikipedia data, preprocessing text, and training your FastText model, or alternatively, using pre-trained FastText embeddings.

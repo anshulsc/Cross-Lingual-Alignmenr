@@ -3,7 +3,7 @@
 embeddings:
   fasttext:
     dim: 300
-    epoch: 10
+    epoch: 100
     lr: 0.05
     wordNgrams: 2
     loss: "ns"  # Negative Sampling
@@ -11,8 +11,8 @@ embeddings:
     minn: 3
     maxn: 6
     thread: 4
-    model_en_path: "embeddings/fasttext_en.bin"
-    model_hi_path: "embeddings/fasttext_hi.bin"
+    model_en_path: "embeddings/trained/fasttext_en.bin"
+    model_hi_path: "embeddings/trained/fasttext_hi.bin"
   vocabulary_limit: 100000
   filtered_embeddings_dir: "embeddings"
 

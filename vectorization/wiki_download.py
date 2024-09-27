@@ -1,5 +1,3 @@
-# scripts/download_wiki.py
-
 import os
 import wget
 import logging
@@ -31,7 +29,6 @@ def download_wikipedia_dump(language_code, url, dest_folder):
 
 def main(config):
     setup_logging()
-
     with ThreadPoolExecutor(max_workers=4) as executor:  
         future_to_lang = {executor.submit(download_wikipedia_dump, lang, details['url'], details['destination']): lang 
                           for lang, details in config['wikipedia_dumps'].items()}

@@ -3,6 +3,8 @@ import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 import matplotlib.pyplot as plt
 from cross_align.alignement import align_embeddings, apply_alignment
+import seaborn as sns
+import tqdm
 
 def word_translation_accuracy(src_emb, tgt_emb, src_words, tgt_words, test_dict, k=5):
     """Evaluate word translation accuracy."""
@@ -21,7 +23,6 @@ def word_translation_accuracy(src_emb, tgt_emb, src_words, tgt_words, test_dict,
                 correct_1 += 1
             if target in [tgt_words[idx] for idx in top_k]:
                 correct_5 += 1
-    print(similarities)
     p1 = correct_1 / total
     p5 = correct_5 / total
     return p1, p5
@@ -44,12 +45,13 @@ def ablation_study(src_emb, tgt_emb, src_words, tgt_words, train_dict, test_dict
         train_subset = train_dict[:size]
         aligned_emb = align_embeddings(src_emb, tgt_emb, src_words, tgt_words, train_subset)
         en_aligned_supervised = apply_alignment(src_emb, aligned_emb)
-        p1, p5 = word_translation_accuracy(aligned_emb, tgt_emb, src_words, tgt_words, test_dict)
+        p1, p5 = word_translation_accuracy(en_aligned_supervised , tgt_emb, src_words, tgt_words, test_dict)
         results.append((size, p1, p5))
     return results
 
 def plot_ablation_results(results):
     """Plot ablation study results."""
+
     sizes, p1_scores, p5_scores = zip(*results)
     plt.figure(figsize=(10, 6))
     plt.plot(sizes, p1_scores, marker='o', label='Precision@1')
@@ -59,4 +61,20 @@ def plot_ablation_results(results):
     plt.title('Ablation Study: Impact of Training Dictionary Size')
     plt.legend()
     plt.grid(True)
+    plt.show()
+
+def plot_similarity_distribution(similarities):
+    """
+    Plots the distribution of cosine similarity scores.
+
+    Parameters:
+    - similarities: List of cosine similarity scores.
+    """
+    sim_scores = [sim for _, _, sim in similarities]
+    
+    plt.figure(figsize=(10, 6))
+    sns.histplot(sim_scores, bins=50, kde=True, color='skyblue')
+    plt.title("Cosine Similarity Distribution between Aligned English and Hindi Word Pairs")
+    plt.xlabel("Cosine Similarity")
+    plt.ylabel("Frequency")
     plt.show()

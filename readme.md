@@ -1,6 +1,3 @@
-Here's an improved version of your documentation, with a clearer structure, detailed explanations, and improved flow:
-
----
 
 # **Training Our Own FastText Embedding and Preprocessing Pipeline**
 
@@ -183,7 +180,3 @@ pip install -r requirements.txt
 1. **Experimentation**: Try different preprocessing techniques, such as stemming or lemmatization, to further clean the text.
 2. **Embedding Models**: Experiment with different models, such as GloVe or Word2Vec, to compare results.
 3. **Applications**: Use the trained embeddings for downstream tasks such as clustering, classification, or semantic similarity.
-
----
-
-Let me know if you need any more details added to the documentation!

@@ -27,8 +27,6 @@ An ablation study is conducted to observe the impact of dataset size on the perf
 
 ### **Cosine Similarity Graph**
 
-The cosine similarity graph below visualizes word vector similarities produced by the trained FastText model. This comparison between selected words and their nearest neighbors in the embedding space provides insights into the semantic relationships captured by the model.
-
 ![Cosine Similarity Graph](figures/Figure_3_Pretrained.png)
 ![Cosine Similarity Graph](figures/Figure_3_trained.png)
 
@@ -195,7 +193,7 @@ lexicon/en-hi.test.txt  # Test dictionary
 
 ## **Directory Structure**
 
-Below is the recommended directory structure for the project:
+Below is the directory structure for the project:
 
 ```
 /project-root

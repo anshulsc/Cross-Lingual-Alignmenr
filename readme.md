@@ -179,15 +179,15 @@ If you'd prefer to use pre-trained embeddings, you can download them and store t
 
 The next step involves downloading the MUSE dataset, which provides bilingual dictionaries for training and testing cross-lingual alignment.
 
-1. Download the MUSE dataset (English-Hindi bilingual lexicon) from the official [MUSE GitHub repository](https://github.com/facebookresearch/MUSE).
+ Download the MUSE dataset (English-Hindi bilingual lexicon) from the official [MUSE GitHub repository](https://github.com/facebookresearch/MUSE).
 
-2. Download the bilingual lexicon for **English-Hindi** and store it in the `lexicon/` folder:
+ 1. Download the bilingual lexicon for **English-Hindi** and store it in the `lexicon/` folder:
 
 ```bash
 wget https://dl.fbaipublicfiles.com/arrival/dictionaries/en-hi.txt -P lexicon/
 ```
 
-3. Similarly, download the **test** dictionary and store it in the same folder:
+2. Similarly, download the **test** dictionary and store it in the same folder:
 
 ```bash
 wget https://dl.fbaipublicfiles.com/arrival/dictionaries/en-hi.5000-6500.txt -P lexicon/
@@ -259,9 +259,8 @@ This command-line argument provides flexibility in selecting between trained and
 ---
 
 ## **Next Steps**
+Unsupervised Alignment: Implement an unsupervised alignment method, such as Cross-Domain Similarity Local Scaling (CSLS) combined with adversarial training, as described in the MUSE paper. CSLS is particularly useful for addressing the hubness problem, which occurs when a small number of word embeddings act as neighbors for many other embeddings.
 
-1. **Experimentation**: Try different text preprocessing techniques (e.g., stemming or lemmatization) to improve results.
-2. **Explore Other Models**
+Compare its performance with the supervised Procrustes method currently implemented in the pipeline.
 
-: Train and compare alternative embedding models like GloVe or Word2Vec to analyze performance differences.
-3. **Apply to Downstream Tasks**: Use the trained embeddings for tasks such as clustering, classification, or semantic similarity analysis.
+CSLS and adversarial training are more robust in low-resource settings where supervision (such as a bilingual lexicon) is unavailable or limited.

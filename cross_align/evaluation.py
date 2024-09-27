@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from cross_align.alignement import align_embeddings, apply_alignment
 import seaborn as sns
 import tqdm
+from scipy.interpolate import make_interp_spline
 
 def word_translation_accuracy(src_emb, tgt_emb, src_words, tgt_words, test_dict, k=5):
     correct_1 = correct_5 = total = 0
@@ -46,23 +47,52 @@ def ablation_study(src_emb, tgt_emb, src_words, tgt_words, train_dict, test_dict
         results.append((size, p1, p5))
     return results
 
-def plot_ablation_results(results):
+def plot_ablation_results(results, model_type):
     sizes, p1_scores, p5_scores = zip(*results)
+    
+    # Convert sizes and scores to numpy arrays for interpolation
+    sizes = np.array(sizes)
+    p1_scores = np.array(p1_scores)
+    p5_scores = np.array(p5_scores)
+    
+    # Check the number of unique size values
+    num_points = len(np.unique(sizes))
+    
+    # Choose the degree of the spline based on the number of points
+    if num_points >= 4:
+        k = 3  # Cubic spline
+    elif num_points == 3:
+        k = 2  # Quadratic spline
+    elif num_points == 2:
+        k = 1  # Linear interpolation
+    else:
+        raise ValueError("Not enough points for interpolation.")
+    
+    # Generate new size values for smooth curves (more points for a smooth line)
+    size_smooth = np.linspace(sizes.min(), sizes.max(), 300)
+    
+    # Create smooth curves using interpolation
+    p1_smooth = make_interp_spline(sizes, p1_scores, k=k)(size_smooth)
+    p5_smooth = make_interp_spline(sizes, p5_scores, k=k)(size_smooth)
+    
+    # Plot the smooth curves
     plt.figure(figsize=(10, 6))
-    plt.plot(sizes, p1_scores, marker='o', label='Precision@1', )
-    plt.plot(sizes, p5_scores, marker='o', label='Precision@5')
+    plt.plot(size_smooth, p1_smooth, label='Precision@1', linewidth=2)
+    plt.plot(size_smooth, p5_smooth, label='Precision@5', linewidth=2)
+    
+    # Customize plot appearance
     plt.xlabel('Training Dictionary Size')
     plt.ylabel('Precision')
-    plt.title('Ablation Study: Impact of Training Dictionary Size')
+    plt.title(f'Ablation Study {model_type} Model: Impact of Training Dictionary Size')
     plt.legend()
     plt.grid(True)
     plt.show()
 
-def plot_similarity_distribution(similarities):
+def plot_similarity_distribution(similarities, model_type):
     sim_scores = [sim for _, _, sim in similarities]
     plt.figure(figsize=(10, 6))
     sns.histplot(sim_scores, bins=50, kde=True, color='skyblue')
-    plt.title("Cosine Similarity Distribution between Aligned English and Hindi Word Pairs")
+    plt.title(f"Cosine Similarity Distribution for {model_type} model between Aligned English and Hindi Word Pairs")
     plt.xlabel("Cosine Similarity")
     plt.ylabel("Frequency")
     plt.show()

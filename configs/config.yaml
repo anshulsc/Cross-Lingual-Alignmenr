@@ -3,7 +3,7 @@
 embeddings:
   fasttext:
     dim: 300
-    epoch: 100
+    epoch: 200
     lr: 0.05
     wordNgrams: 2
     loss: "ns"  # Negative Sampling

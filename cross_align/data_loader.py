@@ -1,9 +1,12 @@
 import fasttext
 import os
 
-def load_fasttext_model(embedding_dir, lang_code):
+def load_fasttext_model(embedding_dir, lang_code, trained=True):
     """Load the FastText model for a given language."""
-    model_path = os.path.join(embedding_dir, f"cc.{lang_code}.300.bin")
+    if trained:
+        model_path = os.path.join(embedding_dir, f"trained/fasttext_{lang_code}.bin")
+    else:
+        model_path = os.path.join(embedding_dir, f"pretrained/cc.{lang_code}.300.bin")
     return fasttext.load_model(model_path)
 
 def get_top_n_words(model, n=100000):

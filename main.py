@@ -15,16 +15,14 @@ def setup_logging():
 
 def main():
     setup_logging()
-    
     logging.info("Starting cross-lingual alignment pipeline...")
-    embedding_dir = "./embeddings/pretrained/"
+    embedding_dir = "./embeddings/"
     muse_dir = "lexicon/"
+    model_type = "trained"
 
-
-
-    logging.info("Loading FastText models...")
-    en_embeddings = load_fasttext_model(embedding_dir, 'en')
-    hi_embeddings = load_fasttext_model(embedding_dir, 'hi')
+    logging.info(f"Loading {model_type} FastText models...")
+    en_embeddings = load_fasttext_model(embedding_dir, 'en', trained=True)
+    hi_embeddings = load_fasttext_model(embedding_dir, 'hi', trained=True)
 
 
     logging.info("Extracting top 100000 words from FastText models...")
@@ -43,7 +41,7 @@ def main():
 
     logging.info("Evaluating supervised alignment...")
     p1, p5 = word_translation_accuracy(en_aligned_supervised, hi_embeddings, en_words, hi_words, test_dict)
-    logging.info(f"Supervised Alignment Results: Precision@1: {p1:.4f}, Precision@5: {p5:.4f}")
+    logging.info(f"Supervised Alignment Results for {model_type} model: Precision@1: {p1:.4f}, Precision@5: {p5:.4f}")
 
 
     logging.info("Analyzing cosine similarities...")
@@ -57,8 +55,8 @@ def main():
     for  size, p1, p5 in ablation_results:
         logging.info(f"For sizes {size}: P@1` = {p1:.4f}, P@5 = {p5:.4f}")
     logging.info("Plotting ablation study results...")
-    plot_ablation_results(ablation_results)
-    plot_similarity_distribution(similarities)
+    plot_ablation_results(ablation_results, model_type)
+    plot_similarity_distribution(similarities, model_type)
     logging.info("Ablation study completed and plotted.")
 
 if __name__ == "__main__":

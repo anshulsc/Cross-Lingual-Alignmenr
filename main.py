@@ -1,47 +1,67 @@
-# main.py
-
+import logging
 from cross_align.data_loader import load_fasttext_model, get_top_n_words, load_bilingual_lexicon
-from cross_align.embedding_aligner import create_embedding_matrices, procrustes_alignment, align_embeddings
-from cross_align.faiss_search import build_faiss_index, translate_word
-from cross_align.evaluation import evaluate_precision, compute_cosine_similarities, plot_similarity_distribution
-from cross_align.utils import normalize_matrix
-import os
+from cross_align.alignement import align_embeddings, apply_alignment
+from cross_align.evaluation import word_translation_accuracy, analyze_cosine_similarities, ablation_study, plot_ablation_results
 import numpy as np
 
-# Define paths
-embedding_dir = "./embeddings/pretrained/"
-muse_dir = "lexicon/"
+# Set up logging: console and file
+def setup_logging():
+    log_format = "%(asctime)s - %(levelname)s - %(message)s"
+    logging.basicConfig(level=logging.DEBUG,
+                        format=log_format,
+                        handlers=[
+                            logging.FileHandler("logs/alignment.log"),   # Logs to a file
+                            logging.StreamHandler()                # Logs to console
+                        ])
 
-# Load FastText models and vocabs
-english_model = load_fasttext_model(embedding_dir, 'en')
-hindi_model = load_fasttext_model(embedding_dir, 'hi')
+def main():
+    # Initialize logging
+    setup_logging()
+    
+    logging.info("Starting cross-lingual alignment pipeline...")
 
-english_vocab = get_top_n_words(english_model)
-hindi_vocab = get_top_n_words(hindi_model)
+    embedding_dir = "./embeddings/pretrained/"
+    muse_dir = "lexicon/"
 
-# Load bilingual lexicon
-bilingual_lexicon = load_bilingual_lexicon(muse_dir, max_pairs=20000)
+    # Load FastText models and vocabularies
+    logging.info("Loading FastText models...")
+    en_embeddings = load_fasttext_model(embedding_dir, 'en')
+    hi_embeddings = load_fasttext_model(embedding_dir, 'hi')
 
-# Create embedding matrices
-X, Y, valid_pairs = create_embedding_matrices(bilingual_lexicon, english_model, hindi_model, english_vocab, hindi_vocab)
+    en_words = get_top_n_words(en_embeddings)
+    hi_words = get_top_n_words(hi_embeddings)
 
-# Procrustes alignment
-W = procrustes_alignment(X, Y)
-aligned_embeddings_en = align_embeddings(english_model, english_vocab, W)
+    logging.info("Loading bilingual lexicon...")
+    train_dict = load_bilingual_lexicon(muse_dir, 'en', 'hi')
+    test_dict = load_bilingual_lexicon(muse_dir, 'en', 'hi', train=False)
 
-# Normalize aligned and Hindi embeddings
-aligned_eng_matrix = normalize_matrix(np.array([aligned_embeddings_en[word] for word in english_vocab]))
-hindi_matrix = normalize_matrix(np.array([hindi_model.get_word_vector(word) for word in hindi_vocab]))
+    # Supervised alignment (Procrustes)
+    logging.info("Performing supervised alignment...")
+    alignment_matrix = align_embeddings(en_embeddings, hi_embeddings, en_words, hi_words, train_dict)
 
-# Build FAISS index for Hindi embeddings
-index_hi = build_faiss_index(hindi_matrix)
+    # Apply alignment to English model
+    en_aligned_supervised = apply_alignment(en_embeddings, alignment_matrix)
 
-# Evaluate precision
-test_lexicon = bilingual_lexicon[:10000]  # Example test set
-precision_at_1, precision_at_5 = evaluate_precision(test_lexicon, english_vocab, aligned_eng_matrix, index_hi, hindi_vocab)
-print(f"Precision@1: {precision_at_1:.4f}")
-print(f"Precision@5: {precision_at_5:.4f}")
+    # Evaluate supervised alignment
+    logging.info("Evaluating supervised alignment...")
+    p1, p5 = word_translation_accuracy(en_aligned_supervised, hi_embeddings, en_words, hi_words, test_dict)
+    logging.info(f"Supervised Alignment Results: Precision@1: {p1:.4f}, Precision@5: {p5:.4f}")
 
-# Compute and plot cosine similarities
-cosine_similarities = compute_cosine_similarities(test_lexicon, english_vocab, aligned_eng_matrix, hindi_vocab, hindi_matrix)
-plot_similarity_distribution(cosine_similarities)
+    # Analyze cosine similarities
+    word_pairs = [('dog', 'कुत्ता'), ('cat', 'बिल्ली'), ('house', 'घर')]
+    similarities = analyze_cosine_similarities(en_aligned_supervised, hi_embeddings, en_words, hi_words, word_pairs)
+    logging.info("Cosine Similarities:")
+    for src, tgt, sim in similarities:
+        logging.info(f"{src} - {tgt}: {sim:.4f}")
+
+    # Ablation study
+    sizes = [5000, 10000, 20000]
+    logging.info("Starting ablation study with sizes: 5000, 10000, 20000")
+    ablation_results = ablation_study(en_embeddings, hi_embeddings, en_words, hi_words, train_dict, test_dict, sizes)
+    
+    # Plot ablation results
+    plot_ablation_results(ablation_results)
+    logging.info("Ablation study completed and plotted.")
+
+if __name__ == "__main__":
+    main()

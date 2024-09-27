@@ -1,111 +1,176 @@
-Here's the detailed documentation for your text embedding and preprocessing pipeline. The steps cover downloading the Wikipedia dump, using WikiExtractor, and following through with extraction, preprocessing, and training:
+Here's an improved version of your documentation, with a clearer structure, detailed explanations, and improved flow:
 
 ---
 
-# **Text Embedding and Preprocessing Pipeline**
+# **Training Our Own FastText Embedding and Preprocessing Pipeline**
 
 ## **Overview**
 
-This documentation outlines the steps to download Wikipedia data, extract articles, preprocess the text, and finally train a text embedding model. The following scripts are part of the pipeline:
+This documentation outlines the steps to build your own text embedding model from scratch using Wikipedia data. The process involves downloading Wikipedia dumps, extracting relevant articles, preprocessing the text, and training a FastText embedding model. The pipeline consists of the following scripts:
 
-1. `wiki_download.py`: Automates downloading the Wikipedia dump.
-2. `extract_articles.py`: Extracts articles from the Wikipedia dump using WikiExtractor.
-3. `preprocess_text.py`: Cleans and preprocesses the extracted text for further analysis.
-4. `train_embedding.py`: Trains an embedding model based on the preprocessed text data.
+1. **`wiki_download.py`**: Automates downloading the Wikipedia dump.
+2. **`extract_articles.py`**: Extracts articles from the Wikipedia dump using WikiExtractor.
+3. **`preprocess_text.py`**: Cleans and preprocesses the extracted text.
+4. **`train_embedding.py`**: Trains a FastText embedding model based on the preprocessed text.
 
-### **Prerequisites**
+## **Prerequisites**
+
+Before starting, ensure that the following are installed and configured:
 
 - **Python 3.x**
 - **Conda** for environment management
-- **WikiExtractor** for article extraction
-- **Required Python packages**: numpy, pandas, gensim, sklearn (and any others defined in your environment).
+- **WikiExtractor** for extracting articles from Wikipedia dumps
+- **Required Python packages**: `numpy`, `pandas`, `gensim`, `sklearn`, and others specified in `requirements.txt`.
 
-### **1. Download Wikipedia Dump**
+---
 
-1. The Wikipedia dump file can be quite large. To download it, run the script `wiki_download.py`, which automates the process of fetching the dump. This script may download a specific language dump or a general dump based on your configuration file (`config.yaml`).
+## **1. Download Wikipedia Dump**
+
+Wikipedia dumps are large files containing all the articles in a given language. You can download a specific language dump or the entire dump.
+
+1. **Download the Wikipedia dump**: The `wiki_download.py` script automates the process of fetching the latest Wikipedia dump. It downloads the compressed `.xml.bz2` file from Wikipedia.
+
+Run the following command:
 
 ```bash
 python wiki_download.py
 ```
 
-2. The download will store the Wikipedia data in a compressed format (usually `.xml.bz2`).
+By default, the downloaded dumps will be stored in the `data/raw/` directory:
 
-### **2. Extract Articles from Wikipedia Dump**
+```
+data/raw/hiwiki-latest-pages-articles.xml.bz2  # Hindi Wikipedia dump
+data/raw/enwiki-latest-pages-articles.xml.bz2  # English Wikipedia dump
+```
 
-After downloading the Wikipedia dump, the next step is to extract the text content using WikiExtractor.
+---
+
+## **2. Extract Articles from the Wikipedia Dump**
+
+Once the dump is downloaded, we need to extract plain text from the XML format. This is achieved using the WikiExtractor tool.
 
 1. **Install WikiExtractor**:
-   You can install it by running:
 
 ```bash
 pip install wikiextractor
 ```
 
+2. **Run WikiExtractor**: Use WikiExtractor to extract articles in JSON format while removing unnecessary templates.
+
+For Hindi:
+
 ```bash
-wikiextractor -o data/extracted/extracted_hi --json --no-templates  data/raw/hiwiki-latest-pages-articles.xml.bz2
+wikiextractor -o data/extracted/extracted_hi --json --no-templates data/raw/hiwiki-latest-pages-articles.xml.bz2
 ```
 
-2. **Extract articles**:
-   Run `extract_articles.py` to parse the downloaded dump and extract relevant articles. This script uses the WikiExtractor tool internally to extract plain text from the Wikipedia XML dump.
+For English:
+
+```bash
+wikiextractor -o data/extracted/extracted_en --json --no-templates data/raw/enwiki-latest-pages-articles.xml.bz2
+```
+
+3. **Extract articles using the script**: Alternatively, you can use the `extract_articles.py` script to automate this process:
 
 ```bash
 python extract_articles.py
 ```
 
-The script will output extracted articles into a specified directory, usually in `.txt` format. The configuration for input/output directories can be set in the `config.yaml` file.
+The extracted articles will be stored in the `data/processed/` directory in `.txt` format. You can configure the input and output paths in the `config.yaml` file.
 
-### **3. Preprocess the Extracted Text**
+Output Example:
 
-The extracted text is often noisy and needs to be cleaned and tokenized before being used for embedding. The `preprocess_text.py` script handles this preprocessing:
+```
+data/processed/final_en.txt
+```
 
-1. **Text Cleaning**: Remove non-relevant characters, such as punctuation, HTML tags, or any specific formatting from Wikipedia articles.
-2. **Tokenization**: The script tokenizes the text into words and prepares it for training by standardizing the text format (lowercasing, removing stopwords, etc.).
+---
 
-To preprocess the data:
+## **3. Preprocess the Extracted Text**
+
+The extracted articles may contain noise and formatting issues, which need to be cleaned up before training the embedding model.
+
+1. **Text Cleaning**: The `preprocess_text.py` script performs several preprocessing steps:
+   - Removing HTML tags, punctuation, and other unwanted characters.
+   - Converting text to lowercase.
+   - Removing stopwords (optional).
+
+2. **Tokenization**: It splits the text into words and prepares it for training by standardizing the format.
+
+Run the following command to preprocess the data:
 
 ```bash
 python preprocess_text.py
 ```
 
-The preprocessed text will be stored for the next step: embedding training.
+Preprocessed text will be saved in the `data/processed/` directory:
 
-### **4. Train Embedding Model**
+```
+data/processed/preprocessed_en.txt
+```
 
-Once the text is preprocessed, you can train a word embedding model on it using the `train_embedding.py` script. This script allows you to train various embedding models such as Word2Vec, FastText, or others depending on the configuration.
+This cleaned and tokenized text will be used as input for embedding training.
 
-1. **Training**: Use `train_embedding.py` to train the embedding model. It supports configurable options for model type, vector size, context window, and more via the `config.yaml` file.
+---
+
+## **4. Train FastText Embedding Model**
+
+Once the text is preprocessed, it's ready for training a FastText embedding model. The FastText model is particularly good for capturing subword information, making it suitable for languages with rich morphology.
+
+1. **Training**: Run the `train_embedding.py` script to train a FastText model. You can configure the model parameters (e.g., vector size, context window) via the `config.yaml` file.
+
+Run the following command:
 
 ```bash
 python train_embedding.py
 ```
 
-2. The trained model will be saved to disk and can be used for downstream tasks such as text classification, similarity searches, or other NLP tasks.
+The trained model will be saved in the `embedding/trained/` directory in `.bin` format:
 
-### **Configuration**
+```
+embedding/trained/fasttext_model.bin
+```
 
-The `config.yaml` file is the central place for configuring paths, parameters for extraction, preprocessing, and model training. Be sure to update it with your desired settings for the input dump, output paths, preprocessing steps, and model parameters.
+This model can be used for various downstream NLP tasks such as text classification, similarity searches, or information retrieval.
 
-### **Directory Structure**
+---
 
-Here’s a suggested directory structure for the project:
+## **Configuration**
+
+All paths, parameters, and settings for downloading, extracting, preprocessing, and training are stored in the `config.yaml` file. This file centralizes the configuration and makes it easy to adjust the pipeline without modifying the code.
+
+---
+
+## **Directory Structure**
+
+Here's the recommended directory structure for the project:
 
 ```
 /project-root
 │
-├── /data/                  # Store raw and processed data
-├── /scripts/                # All the Python scripts
+├── /data/                    # Store raw, extracted, and processed data
+│   ├── /raw/                 # Raw Wikipedia dumps
+│   ├── /extracted/           # Extracted Wikipedia articles
+│   └── /processed/           # Preprocessed text data
+│
+├── /embedding/               # Store trained embeddings
+│   └── /trained/             # Trained embedding models
+│
+├── /scripts/                 # Python scripts for each step
 │   ├── wiki_download.py
 │   ├── extract_articles.py
 │   ├── preprocess_text.py
 │   └── train_embedding.py
-├── config.yaml              # Configuration file for all steps
-├── README.md                # Documentation
-└── requirements.txt         # Python dependencies
+│
+├── config.yaml               # Configuration file for paths, parameters
+├── README.md                 # Project documentation
+└── requirements.txt          # Python dependencies
 ```
 
-### **Dependencies**
+---
 
-Ensure that you install all necessary dependencies by running:
+## **Dependencies**
+
+Ensure that all necessary dependencies are installed by running:
 
 ```bash
 pip install -r requirements.txt
@@ -115,10 +180,10 @@ pip install -r requirements.txt
 
 ## **Next Steps**
 
-- Experiment with different text preprocessing techniques to improve the quality of the embeddings.
-- Try different embedding models like FastText or GloVe, depending on the task.
-- Use the trained embeddings for downstream applications, such as classification, clustering, or information retrieval.
+1. **Experimentation**: Try different preprocessing techniques, such as stemming or lemmatization, to further clean the text.
+2. **Embedding Models**: Experiment with different models, such as GloVe or Word2Vec, to compare results.
+3. **Applications**: Use the trained embeddings for downstream tasks such as clustering, classification, or semantic similarity.
 
 ---
 
-Let me know if you need any further details added to the documentation!
+Let me know if you need any more details added to the documentation!

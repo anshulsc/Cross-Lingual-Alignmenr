@@ -20,16 +20,6 @@ def setup_logging(log_file='logs/extract.log'):
     )
 
 def clean_text(text, language):
-    """
-    Cleans the input text by removing unwanted characters and normalizing it.
-
-    Parameters:
-    - text (str): The raw text to clean.
-    - language (str): 'en' for English, 'hi' for Hindi.
-
-    Returns:
-    - str: The cleaned text.
-    """
     # Remove multiple newlines and replace with space
     text = re.sub(r'\n+', ' ', text)
     
@@ -56,16 +46,6 @@ def clean_text(text, language):
     return text
 
 def tokenize_text(text, language):
-    """
-    Tokenizes the input text based on the specified language.
-
-    Parameters:
-    - text (str): The cleaned text to tokenize.
-    - language (str): 'en' for English, 'hi' for Hindi.
-
-    Returns:
-    - list: List of tokens.
-    """
     if language == 'en':
         tokens = nltk.word_tokenize(text)
     elif language == 'hi':
@@ -75,14 +55,6 @@ def tokenize_text(text, language):
     return tokens
 
 def preprocess_articles(input_file, output_file, language):
-    """
-    Preprocesses articles by cleaning and tokenizing.
-
-    Parameters:
-    - input_file (str): Path to the input file containing raw articles.
-    - output_file (str): Path to save the preprocessed articles.
-    - language (str): 'en' for English, 'hi' for Hindi.
-    """
     with open(input_file, 'r', encoding='utf-8') as infile, \
          open(output_file, 'w', encoding='utf-8') as outfile:
         for line in infile:
@@ -109,13 +81,6 @@ def preprocess_articles(input_file, output_file, language):
             outfile.write(processed_text + '\n')
 
 def process_language(lang, config):
-    """
-    Process a single language by calling preprocess_articles function.
-
-    Parameters:
-    - lang (str): Language code (e.g., 'en' or 'hi').
-    - config (dict): Configuration dictionary.
-    """
     preprocess_config = config['data_preparation']
     processed_data_dir = preprocess_config['processed_data_dir']
     
@@ -132,7 +97,6 @@ def main():
 
     languages = ['en', 'hi']
 
-    # Sequentially process each language
     for lang in languages:
         process_language(lang, config)
 

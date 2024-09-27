@@ -50,15 +50,12 @@ def ablation_study(src_emb, tgt_emb, src_words, tgt_words, train_dict, test_dict
 def plot_ablation_results(results, model_type):
     sizes, p1_scores, p5_scores = zip(*results)
     
-    # Convert sizes and scores to numpy arrays for interpolation
     sizes = np.array(sizes)
     p1_scores = np.array(p1_scores)
     p5_scores = np.array(p5_scores)
     
-    # Check the number of unique size values
     num_points = len(np.unique(sizes))
     
-    # Choose the degree of the spline based on the number of points
     if num_points >= 4:
         k = 3  # Cubic spline
     elif num_points == 3:

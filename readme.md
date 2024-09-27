@@ -1,6 +1,3 @@
-Here’s an updated version of the documentation that includes instructions for cloning the repository, installing dependencies, creating necessary directories, and structuring the results first:
-
----
 
 ## **Overview**
 
@@ -51,8 +48,8 @@ The cosine similarity graph below visualizes word vector similarities produced b
 Start by cloning the GitHub repository containing all the necessary scripts and configuration files:
 
 ```bash
-git clone https://github.com/your-repo/fasttext-embedding.git
-cd fasttext-embedding
+git clone https://github.com/anshulsc/cross-lingual-alignment.git
+cd cross-lingual-alignment
 ```
 
 ### **Step 2: Install Dependencies**

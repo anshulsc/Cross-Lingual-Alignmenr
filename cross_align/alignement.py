@@ -1,13 +1,16 @@
 import numpy as np
 from scipy.linalg import orthogonal_procrustes
 import os
+import numpy as np
+from scipy.linalg import orthogonal_procrustes
+import os
+import logging
+from tqdm import tqdm
 
 def get_word_vector(model, word):
-    """Get word vector from the model."""
     return model.get_word_vector(word)
 
 def align_embeddings(source_emb, target_emb, src_words, tgt_words, lexicon):
-    """Perform initial Procrustes alignment between source and target embeddings."""
     src_vectors = []
     tgt_vectors = []
     
@@ -29,38 +32,11 @@ def apply_alignment(model, alignment_matrix):
         aligned_vectors[word] = aligned_vector
     return aligned_vectors
 
-import numpy as np
-from scipy.linalg import orthogonal_procrustes
-import os
-import logging
-from tqdm import tqdm
 
-def get_word_vector(model, word):
-    return model.get_word_vector(word)
 
-def align_embeddings(source_emb, target_emb, src_words, tgt_words, lexicon):
-    src_vectors = []
-    tgt_vectors = []
-    
-    for src_word, tgt_word in tqdm(lexicon, desc="Aligning embeddings"):
-        if src_word in src_words and tgt_word in tgt_words:
-            src_vectors.append(get_word_vector(source_emb, src_word))
-            tgt_vectors.append(get_word_vector(target_emb, tgt_word))
-    
-    src_aligned = np.array(src_vectors)
-    tgt_aligned = np.array(tgt_vectors)
 
-    R, _ = orthogonal_procrustes(src_aligned, tgt_aligned)
-    return R
+# Experiment
 
-def apply_alignment(model, alignment_matrix):
-
-    aligned_vectors = {}
-    for word in tqdm(model.get_words(), desc="Applying alignment"):
-        original_vector = get_word_vector(model, word)
-        aligned_vector = np.dot(original_vector, alignment_matrix)
-        aligned_vectors[word] = aligned_vector
-    return aligned_vectors
 
 def iterative_procrustes_alignment(source_emb, target_emb, src_words, tgt_words, lexicon, num_iterations=10, tol=1e-5):
     logging.info("Starting iterative Procrustes alignment...")

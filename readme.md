@@ -1,3 +1,6 @@
+Here's an updated version of the documentation with a section on downloading the MUSE dataset for cross-lingual alignment and storing it in the `lexicon/` folder.
+
+---
 
 ## **Overview**
 
@@ -27,9 +30,9 @@ An ablation study is conducted to observe the impact of dataset size on the perf
 | Trained FastText (5,000 words) | 0.0209              | 0.0405              |
 | Trained FastText (10,000 words)| 0.2887              | 0.4595              |
 | Trained FastText (20,000 words)| 0.3415              | 0.5799              |
-| Pre-trained FastText (5,000)   | 0.2219            | 0.4587           |
-| Pre-trained FastText (10,000)  | 0.3513              | 0.6100           |
-| Pre-trained FastText (20,000)  | 0.3625               | 0.6306               |
+| Pre-trained FastText (5,000)   | 0.2219              | 0.4587              |
+| Pre-trained FastText (10,000)  | 0.3513              | 0.6100              |
+| Pre-trained FastText (20,000)  | 0.3625              | 0.6306              |
 
 ### **Cosine Similarity Graph**
 
@@ -37,7 +40,6 @@ The cosine similarity graph below visualizes word vector similarities produced b
 
 ![Cosine Similarity Graph](figures/Figure_3_Pretrained.png)
 ![Cosine Similarity Graph](figures/Figure_3_trained.png)
-
 
 ---
 
@@ -72,6 +74,7 @@ mkdir -p data/extracted
 mkdir -p data/processed
 mkdir -p embedding/trained
 mkdir -p embedding/pretrained
+mkdir -p lexicon
 ```
 
 This structure ensures that all data files and trained models are organized appropriately.
@@ -172,9 +175,30 @@ If you'd prefer to use pre-trained embeddings, you can download them and store t
 
 ---
 
-## **Configuration**
+## **Download MUSE Dataset for Cross-Lingual Alignment**
 
-The pipeline configuration, including paths, model parameters, and other settings, is centralized in the `config.yaml` file. Modify this file to adjust the parameters of the training process or specify different input/output paths without changing the code.
+The next step involves downloading the MUSE dataset, which provides bilingual dictionaries for training and testing cross-lingual alignment.
+
+1. Download the MUSE dataset (English-Hindi bilingual lexicon) from the official [MUSE GitHub repository](https://github.com/facebookresearch/MUSE).
+
+2. Download the bilingual lexicon for **English-Hindi** and store it in the `lexicon/` folder:
+
+```bash
+wget https://dl.fbaipublicfiles.com/arrival/dictionaries/en-hi.txt -P lexicon/
+```
+
+3. Similarly, download the **test** dictionary and store it in the same folder:
+
+```bash
+wget https://dl.fbaipublicfiles.com/arrival/dictionaries/en-hi.5000-6500.txt -P lexicon/
+```
+Rename it to `en-hi.test.txt`
+The `lexicon/` folder should now contain the following files:
+
+```
+lexicon/en-hi.txt       # Full dictionary for training
+lexicon/en-hi.test.txt  # Test dictionary
+```
 
 ---
 
@@ -193,6 +217,10 @@ Below is the recommended directory structure for the project:
 ├── /embedding/               # Store trained and pre-trained embeddings
 │   └── /trained/             # Trained embedding models
 │   └── /pretrained/          # Pre-trained embedding models
+│
+├── /lexicon/                 # Store bilingual lexicons
+│   ├── en-hi.txt             # English-Hindi bilingual lexicon (train)
+│   └── en-hi.test.txt        # English-Hindi test lexicon
 │
 ├── /vectorization/           # Python scripts for each step
 │   ├── wiki_download.py      # Download Wikipedia dumps
@@ -233,9 +261,7 @@ This command-line argument provides flexibility in selecting between trained and
 ## **Next Steps**
 
 1. **Experimentation**: Try different text preprocessing techniques (e.g., stemming or lemmatization) to improve results.
-2. **Explore Other Models**: Train and compare alternative embedding models like GloVe or Word2Vec to analyze performance differences.
+2. **Explore Other Models**
+
+: Train and compare alternative embedding models like GloVe or Word2Vec to analyze performance differences.
 3. **Apply to Downstream Tasks**: Use the trained embeddings for tasks such as clustering, classification, or semantic similarity analysis.
-
----
-
-This version enhances the original documentation by including detailed setup instructions for cloning the repository, installing dependencies, creating necessary directories, and providing more structure for a seamless user experience.
